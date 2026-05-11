@@ -119,7 +119,8 @@ def convert_pdf(src_path: Path) -> Path | None:
             # Non-A3 pages are copied as-is
             out_doc.insert_pdf(doc, from_page=page_index, to_page=page_index)
 
-    dst_path = src_path.with_stem(src_path.stem + "_A4")
+    # Force generated files to always use lowercase .pdf extension.
+    dst_path = src_path.with_name(f"{src_path.stem}_A4.pdf")
     out_doc.save(str(dst_path), garbage=4, deflate=True)
     out_doc.close()
     doc.close()
@@ -136,7 +137,10 @@ def main() -> None:
         print(f"Data folder not found: {data_dir}")
         sys.exit(1)
 
-    pdf_files = sorted(data_dir.rglob("*.pdf"))
+    pdf_files = sorted(
+        path for path in data_dir.rglob("*")
+        if path.is_file() and path.suffix.lower() == ".pdf"
+    )
     if not pdf_files:
         print("No PDF files found in data/")
         return
@@ -145,7 +149,7 @@ def main() -> None:
     skipped   = 0
 
     for pdf in pdf_files:
-        if pdf.stem.endswith("_A4"):
+        if pdf.stem.lower().endswith("_a4"):
             continue
 
         print(f"Checking: {pdf.relative_to(data_dir.parent)}", end=" … ")
