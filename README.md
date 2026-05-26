@@ -6,7 +6,7 @@ This repository is a growing collection of PDF-focused scripts for technical dra
 
 - [convert-to-a4.py](docs/convert-to-a4.md): convert A3 pages to A4 using a print-style fit-to-page Ghostscript workflow.
 - [compress-pdf.py](docs/compress-pdf.md): compress large PDFs with configurable Ghostscript presets and image downsampling.
-- [clean-pdf.py](clean-pdf.py): remove annotations and bookmarks (outline) from a PDF.
+- [clean-pdf.py](docs/clean-pdf.md): remove annotations and bookmarks (outline) from a PDF.
 
 ## Requirements
 
