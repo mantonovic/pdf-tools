@@ -24,12 +24,25 @@ Run from the repository root:
 python3 convert-to-a4.py
 ```
 
+Specific file:
+
+```bash
+python3 convert-to-a4.py path/to/drawing.pdf
+```
+
+Directory scan:
+
+```bash
+python3 convert-to-a4.py data --recursive
+```
+
 Behavior:
 
-1. Searches `data/` recursively for PDF files.
-2. Skips files that already end in `_A4.pdf`.
-3. Detects A3 pages from displayed page size.
-4. Creates a new PDF next to the source with `_A4` appended.
+1. Searches the provided input path for PDF files. With no arguments, it uses `data/`.
+2. If the input is a directory, use `--recursive` to scan subdirectories.
+3. Skips files that already end in `_A4.pdf`.
+4. Detects A3 pages from displayed page size.
+5. Creates a new PDF next to the source with `_A4` appended.
 
 Example input and output paths:
 
@@ -49,9 +62,17 @@ docker build -t pdf-tools .
 Run converter:
 
 ```bash
-docker run --rm \
+docker run --rm -it \
 	-v "$PWD/data:/app/data" \
 	pdf-tools
+```
+
+Run conversion directly without the menu:
+
+```bash
+docker run --rm \
+	-v "$PWD/data:/app/data" \
+	pdf-tools python3 convert-to-a4.py /app/data --recursive
 ```
 
 If you want output files written back to the host, ensure mounted folders are writable.
