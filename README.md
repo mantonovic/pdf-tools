@@ -47,13 +47,22 @@ Build once:
 docker build -t pdf-tools .
 ```
 
-Run converter:
+Run the interactive menu:
 
 ```bash
-docker run --rm \
+docker run --rm -it \
 	-v "$PWD/data:/app/data" \
 	pdf-tools
 ```
+
+The default container command scans `/app/data` recursively, ignores generated files ending in `_clean.pdf`, `_compressed.pdf`, or `_A4.pdf`, and prompts you to run one of these actions across the discovered source PDFs:
+
+- clean
+- compress
+- convert to A4
+- all in sequence (`clean -> convert -> compress`)
+
+Interactive selection requires `-it`. If you prefer a non-interactive run, pass an explicit command after the image name.
 
 Run compressor:
 
@@ -77,6 +86,14 @@ Clean all PDFs in a directory:
 docker run --rm \
 	-v "/path/to/dir:/data" \
 	pdf-tools python3 clean-pdf.py /data
+```
+
+Convert all PDFs in a mounted directory recursively without the menu:
+
+```bash
+docker run --rm \
+	-v "$PWD/data:/app/data" \
+	pdf-tools python3 convert-to-a4.py /app/data --recursive
 ```
 
 For detailed options and examples, see the script docs in [docs/](docs).
