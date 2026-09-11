@@ -41,7 +41,18 @@ python3 clean-pdf.py /path/to/directory/
 
 All scripts are available inside the Docker image — no local Python or Ghostscript installation needed.
 
-Build once:
+### Option 1: Pull Pre-built Image
+
+Pull the pre-built image from GitHub Container Registry (no build required):
+
+```bash
+docker pull ghcr.io/mantonovic/pdf-tools/pdf-tools:latest
+docker tag ghcr.io/mantonovic/pdf-tools/pdf-tools:latest pdf-tools
+```
+
+### Option 2: Build Locally
+
+Build the image yourself:
 
 ```bash
 docker build -t pdf-tools .
