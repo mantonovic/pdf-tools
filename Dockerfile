@@ -11,6 +11,6 @@ RUN apt-get update \
 
 RUN pip install --no-cache-dir pymupdf pikepdf
 
-COPY convert-to-a4.py compress-pdf.py clean-pdf.py ./
+COPY convert-to-a4.py compress-pdf.py clean-pdf.py docker-menu.py ./
 
-CMD ["python", "convert-to-a4.py"]
+CMD ["python", "docker-menu.py"]
