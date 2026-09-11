@@ -13,6 +13,8 @@ import shutil
 import subprocess
 import sys
 import tempfile
+import argparse
+import re
 from importlib import import_module
 from pathlib import Path
 from typing import Any
@@ -32,6 +34,27 @@ A3_LONG_PT  = 1190.55  # longer  side of A3
 TOLERANCE   = 5.0      # points tolerance for dimension matching
 A4_SHORT_PT = 595.28   # 210 mm in points
 A4_LONG_PT  = 841.89   # 297 mm in points
+GENERATED_SUFFIX_RE = re.compile(r"_(?:a4|clean|compressed)(?:_\d+)?$", re.IGNORECASE)
+
+
+def parse_args() -> argparse.Namespace:
+    parser = argparse.ArgumentParser(
+        description="Convert A3 pages in PDFs to A4 using a print-style Ghostscript workflow.",
+        formatter_class=argparse.ArgumentDefaultsHelpFormatter,
+    )
+    parser.add_argument(
+        "input_path",
+        nargs="?",
+        type=Path,
+        default=Path(__file__).parent / "data",
+        help="Input PDF file or directory containing PDFs.",
+    )
+    parser.add_argument(
+        "--recursive",
+        action="store_true",
+        help="If input is a directory, scan recursively.",
+    )
+    return parser.parse_args()
 
 
 def _ghostscript_executable() -> str:
@@ -131,28 +154,44 @@ def convert_pdf(src_path: Path) -> Path | None:
     return dst_path
 
 
+def gather_pdf_files(input_path: Path, recursive: bool) -> list[Path]:
+    if input_path.is_file():
+        return [input_path] if input_path.suffix.lower() == ".pdf" else []
+
+    if not input_path.is_dir():
+        return []
+
+    pattern = "**/*.pdf" if recursive else "*.pdf"
+    return sorted(
+        path for path in input_path.glob(pattern)
+        if path.is_file() and not GENERATED_SUFFIX_RE.search(path.stem)
+    )
+
+
 def main() -> None:
-    data_dir = Path(__file__).parent / "data"
-    if not data_dir.is_dir():
-        print(f"Data folder not found: {data_dir}")
+    args = parse_args()
+    input_path = args.input_path.expanduser().resolve()
+
+    if not input_path.exists():
+        print(f"Input path does not exist: {input_path}")
         sys.exit(1)
 
-    pdf_files = sorted(
-        path for path in data_dir.rglob("*")
-        if path.is_file() and path.suffix.lower() == ".pdf"
-    )
+    pdf_files = gather_pdf_files(input_path, args.recursive)
     if not pdf_files:
-        print("No PDF files found in data/")
+        print("No PDF files found to process.")
         return
 
+    input_root = input_path if input_path.is_dir() else input_path.parent
     converted = 0
     skipped   = 0
 
     for pdf in pdf_files:
-        if pdf.stem.lower().endswith("_a4"):
-            continue
+        try:
+            display_path = pdf.relative_to(input_root)
+        except ValueError:
+            display_path = pdf
 
-        print(f"Checking: {pdf.relative_to(data_dir.parent)}", end=" … ")
+        print(f"Checking: {display_path}", end=" ... ")
         result = convert_pdf(pdf)
         if result:
             print(f"converted → {result.name}")
