@@ -8,6 +8,27 @@ This repository is a growing collection of PDF-focused scripts for technical dra
 - [compress-pdf.py](docs/compress-pdf.md): compress large PDFs with configurable Ghostscript presets and image downsampling.
 - [clean-pdf.py](docs/clean-pdf.md): remove annotations and bookmarks (outline) from a PDF.
 
+## ⚠️ Disclaimer
+
+**Always backup your files and directories before running these scripts.**
+
+These scripts modify PDF files in place or create new files in your working directories. While we strive to ensure reliability, there is a risk of:
+
+- File corruption during processing
+- Loss of data if operations fail midway
+- Unintended modifications to the original PDFs
+- Disk space issues when creating processed copies
+
+**Best Practices:**
+
+1. **Create a backup** of all files and folders before processing
+2. **Test with a small sample** of files first
+3. **Keep the original files** in a separate location
+4. **Verify output files** before deleting originals
+5. **Monitor disk space** to ensure sufficient storage for both original and processed files
+
+The authors of these scripts are not responsible for any data loss, corruption, or other issues resulting from the use of these tools. Use at your own risk.
+
 ## Requirements
 
 - Python 3.10+
